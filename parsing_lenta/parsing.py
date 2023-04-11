@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import asyncio
 
 
-class ParsingLenta():
+class ParsingLenta:
     def __init__(self, year: str = None, month: str = None, day: str = None):
         self.URL_SITE = 'https://lenta.ru'
         self.year = year
@@ -39,6 +39,6 @@ class ParsingLenta():
         return soup
 
     @staticmethod
-    async def request(session: ClientSession, url: str):
+    async def request(session: ClientSession, url: str) -> str:
         async with session.get(url) as response:
             return await response.text()
