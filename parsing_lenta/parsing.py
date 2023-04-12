@@ -1,14 +1,10 @@
 import re
 import aiohttp
-from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 import asyncio
 import numpy as np
 
-user_agent = {
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36 OPR/72.0.3815.465 (Edition Yx GX)',
-}
-conn = aiohttp.TCPConnector(limit_per_host=3)
+insert_to_db = asyncio.Event()
 
 
 class ParsingLenta:
@@ -18,7 +14,7 @@ class ParsingLenta:
     @staticmethod
     async def request(url: str) -> str:
         print(f'get page html - {url}')
-        async with aiohttp.ClientSession(trust_env=True, headers=user_agent) as session:
+        async with aiohttp.ClientSession(trust_env=True) as session:
             async with session.get(url) as response:
                 return await response.text()
 
@@ -40,9 +36,10 @@ class ParsingLenta:
             tasks.append(task)
             if len(tasks) == 3:
                 task_result = await asyncio.gather(*tasks)
-                result.append(task_result)
+                result.append(task_result[:-1])
                 tasks = []
                 await asyncio.sleep(1)
+        print('ending')
         return list(np.concatenate(result))
 
     async def get_titles(self, html_list: list) -> list:
